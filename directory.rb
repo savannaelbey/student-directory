@@ -68,7 +68,8 @@ class StudentDirectory
     puts "1 - Input student names"
     puts "2 - Show the students"
     puts "3 - Save the list to students.csv"
-    puts "4 - Exit"
+    puts "4 - load the list from students.csv"
+    puts "5 - Exit"
   end
 
   def show_students
@@ -86,6 +87,8 @@ class StudentDirectory
     when "3"
       save_students
     when "4"
+      load_students
+    when "5"
       exit
     else
       puts "invalid option, try again!"
@@ -109,6 +112,16 @@ class StudentDirectory
       student_data_list = [student[:name], student[:cohort]]
       student_csv_line = student_data_list.join(",")
       file.puts student_csv_line
+    end
+    file.close
+  end
+
+  def load_students
+    #open file for loading
+    file = File.open("students.csv", "r")
+    file.readlines.each do |line|
+      name, cohort = line.chomp.split(",")
+      @students << {name: name, cohort: cohort}
     end
     file.close
   end
