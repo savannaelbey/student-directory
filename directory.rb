@@ -1,42 +1,104 @@
-def input_students
-  # create an empty students list
-  students = []
-  # ask user to input a name
-  puts "Please enter the names of the students"
-  puts "To finish, just hit return twice"
-  # get the first name
-  name = gets.chomp.capitalize
-  # while name is not empty:
-  while !name.empty?
-    # add the student hash to the empty array
-    students << {name: name, cohort: :november}
-    # print message showing how many names have been entered so far and ask for another name.
-    puts "Now we have #{students.count} students"
-    # get another name from the user and save it to the variable "name"
+class StudentDirectory
+
+  def initialize
+    @students = []
+  end
+
+  def input_students
+    # ask user to input a name
+    puts "Please enter the names of the students"
+    puts "To finish, just hit return twice"
+    # get the first name
     name = gets.chomp.capitalize
+    # while name is not empty:
+    while !name.empty?
+      # ask for cohort input
+      puts "Please enter cohort:"
+      # assign input value to a variable
+      cohort = gets.chomp.capitalize
+      if cohort.empty?
+        cohort = "not given"
+      end
+      # add the student hash to the empty array
+      @students <<({name: name, cohort: cohort})
+      # print message showing how many names have been entered so far and ask for another name.
+      puts "We have #{@students.count} students, please enter new name"
+      # get another name from the user and save it to the variable "name"
+      name = gets.chomp.capitalize
+    end
   end
-  # return list of students
-  students
-end
 
-def print_header
-  puts "The students of Villains Academy"
-  puts "-------------"
-end
-
-def print(students)
-  students.each do |student|
-    puts "#{student[:name]} (#{student[:cohort]} cohort)"
+  def print_header
+    puts "The students of my cohort at Makers Academy"
+    puts "-------------"
   end
+
+  def print_students_list
+    if @students.count < 1
+      nil
+    else
+      hash_by_cohort = {}
+      @students.each do |student|
+        name = student[:name]
+        cohort = student[:cohort]
+        if hash_by_cohort[cohort] == nil
+          hash_by_cohort[cohort] = [name]
+        else
+          hash_by_cohort[cohort].push(name)
+        end
+      end
+      hash_by_cohort.each do |key, value|
+        puts "#{key} cohort students are:"
+        puts value.join("\n")
+      end
+    end
+  end
+
+  def print_footer
+    if @students.count == 1
+      puts "Overall, we have 1 great student"
+    else
+      puts "Overall, we have #{@students.count} great students"
+    end
+  end
+
+  def print_menu
+    # show user list of options
+    puts "What would you like to do?"
+    puts "1 - Input student names"
+    puts "2 - show the students"
+    puts "3 - Exit"
+  end
+
+  def show_students
+    print_header
+    print_students_list
+    print_footer
+  end
+
+  def process(user_input)
+    case user_input
+    when "1"
+      input_students
+    when "2"
+      show_students
+    when "3"
+      exit
+    else
+      puts "invalid option, try again!"
+    end
+  end
+
+  def interactive_menu
+    loop do
+      # show user list of options
+      print_menu
+      # excute action as per user input
+      process(gets.chomp)
+    end
+  end
+
 end
 
-def print_footer(students)
-  puts "Overall, we have #{students.count} great students"
-end
-
-# get list of students from user and assign the return value to the variable "students"
-students = input_students
-print_header
-# print list of student names and cohort
-print(students)
-print_footer(students)
+student_directory = StudentDirectory.new
+student_directory.interactive_menu
