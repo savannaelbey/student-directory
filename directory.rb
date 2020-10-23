@@ -66,8 +66,9 @@ class StudentDirectory
     # show user list of options
     puts "What would you like to do?"
     puts "1 - Input student names"
-    puts "2 - show the students"
-    puts "3 - Exit"
+    puts "2 - Show the students"
+    puts "3 - Save the list to students.csv"
+    puts "4 - Exit"
   end
 
   def show_students
@@ -83,6 +84,8 @@ class StudentDirectory
     when "2"
       show_students
     when "3"
+      save_students
+    when "4"
       exit
     else
       puts "invalid option, try again!"
@@ -96,6 +99,18 @@ class StudentDirectory
       # excute action as per user input
       process(gets.chomp)
     end
+  end
+
+  def save_students
+    # open file for writing
+    file = File.open("students.csv", "w")
+    # iterate over the students list
+    @students.each do |student|
+      student_data_list = [student[:name], student[:cohort]]
+      student_csv_line = student_data_list.join(",")
+      file.puts student_csv_line
+    end
+    file.close
   end
 
 end
