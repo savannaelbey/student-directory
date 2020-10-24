@@ -9,13 +9,13 @@ class StudentDirectory
     puts "Please enter the names of the students"
     puts "To finish, just hit return twice"
     # get the first name
-    name = gets.chomp.capitalize
+    name = STDIN.gets.chomp.capitalize
     # while name is not empty:
     while !name.empty?
       # ask for cohort input
       puts "Please enter cohort:"
       # assign input value to a variable
-      cohort = gets.chomp.capitalize
+      cohort = STDIN.gets.chomp.capitalize
       if cohort.empty?
         cohort = "not given"
       end
@@ -24,7 +24,7 @@ class StudentDirectory
       # print message showing how many names have been entered so far and ask for another name.
       puts "We have #{@students.count} students, please enter new name"
       # get another name from the user and save it to the variable "name"
-      name = gets.chomp.capitalize
+      name = STDIN.gets.chomp.capitalize
     end
   end
 
@@ -82,10 +82,12 @@ class StudentDirectory
     case user_input
     when "1"
       input_students
+      puts " Thank you for inputing student details."
     when "2"
       show_students
     when "3"
       save_students
+      puts "Student details saved."
     when "4"
       load_students
     when "5"
@@ -96,14 +98,16 @@ class StudentDirectory
   end
 
   def interactive_menu
+    # Load student data on startup
+    try_load_students
     loop do
       # show user list of options
       print_menu
       # excute action as per user input
-      process(gets.chomp)
+      process(STDIN.gets.chomp)
     end
   end
-
+  # to save the user input data to a file:
   def save_students
     # open file for writing
     file = File.open("students.csv", "w")
@@ -115,18 +119,34 @@ class StudentDirectory
     end
     file.close
   end
-
-  def load_students
+  # to load the student data from the file to the instance variable:
+  def load_students(filename = "students.csv")
     #open file for loading
-    file = File.open("students.csv", "r")
+    file = File.open(filename, "r")
     file.readlines.each do |line|
       name, cohort = line.chomp.split(",")
+      # add student data to the @students variable
       @students << {name: name, cohort: cohort}
     end
     file.close
   end
 
+  # to load the student data from the file on startup:
+  def try_load_students
+    filename = ARGV.first
+    if filename.nil?
+      return
+    elsif File.exists? (filename)
+      load_students(filename)
+    else
+      puts "Sorry #{filename} doesn't exist"
+      exit
+    end
+  end
+
 end
 
 student_directory = StudentDirectory.new
+
+#run the interactive_menu method on the StudentDirectory instance "student_directory"
 student_directory.interactive_menu
